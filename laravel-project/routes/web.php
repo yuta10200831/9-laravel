@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\Income_sourcesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [IncomeController::class, 'index']);
 
 Route::resource('incomes', IncomeController::class);
+
+Route::resource('income_sources', Income_sourcesController::class);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
