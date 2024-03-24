@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\Income_sourcesController;
+use App\Http\Controllers\IndexController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +16,10 @@ use App\Http\Controllers\Income_sourcesController;
 |
 */
 
-Route::get('/', [IncomeController::class, 'index']);
+Route::get('/', [IndexController::class, 'index']);
 
 Route::resource('incomes', IncomeController::class);
 
 Route::resource('income_sources', Income_sourcesController::class);
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';
