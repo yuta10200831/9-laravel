@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [IncomeController::class, 'index']);
+
+Route::resource('incomes', IncomeController::class);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
