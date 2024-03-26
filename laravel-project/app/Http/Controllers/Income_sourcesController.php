@@ -75,8 +75,10 @@ class Income_sourcesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $incomeSource = IncomeSource::findOrFail($id);
+        return view('kakeibo.income.income_sources.edit', compact('incomeSource'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -87,7 +89,14 @@ class Income_sourcesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required'
+        ]);
+
+        $incomeSource = IncomeSource::findOrFail($id);
+        $incomeSource->update($validatedData);
+
+        return redirect()->route('income_sources.index')->with('success', '収入源が更新されました。');
     }
 
     /**
@@ -98,6 +107,9 @@ class Income_sourcesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $incomeSource = IncomeSource::findOrFail($id);
+        $incomeSource->delete();
+
+        return redirect()->route('income_sources.index')->with('success', '収入源が削除されました。');
     }
 }
