@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\Income_sourcesController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\SpendingController;
+use App\Http\Controllers\CategoriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +23,9 @@ Route::get('/', [IndexController::class, 'index']);
 Route::resource('incomes', IncomeController::class);
 
 Route::resource('income_sources', Income_sourcesController::class);
+
+Route::resource('spendings', SpendingController::class);
+
+Route::resource('categories', CategoriesController::class);
 
 require __DIR__.'/auth.php';

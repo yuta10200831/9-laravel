@@ -22,14 +22,16 @@
    <input type="date" name="start_date" class="form-control" value="{{ request ('start_date') }}" placeholder="開始日">
    <span class="mx-2">〜</span>
    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" placeholder="終了日">
-   <button type="submit" class="ml-4 bg-yellow-500 hover:bg-yellow-600 text-blue font-bold py-2 px-6 rounded shadow">
+   <button type="submit" class="ml-4 bg-yellow-500 hover:bg-yellow-600 text-blue font-bold py-2 px-4 rounded shadow">
     検索
    </button>
   </form>
-  <a href="{{ route('incomes.create') }}"
-   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300">
-   収入を登録する
-  </a>
+  <div class="mb-6 mt-4">
+   <a href="{{ route('spendings.create') }}"
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300 mt-4">
+    支出を登録する
+   </a>
+  </div>
  </div>
 
  <div class="bg-white shadow-md rounded my-6">
