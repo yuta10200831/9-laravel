@@ -10,9 +10,9 @@
    <form action="{{ url('/') }}" method="GET" class="flex items-center">
     <div class="flex border-2 border-blue-500 rounded">
      <select name="year" class="bg-white p-2 focus:outline-none">
-      <option value="2022">2022年</option>
-      <option value="2023">2023年</option>
       <option value="2024">2024年</option>
+      <option value="2023">2023年</option>
+      <option value="2022">2022年</option>
      </select>
      <span class="px-4 py-2 bg-blue-500 text-white font-bold">
       の収支一覧
