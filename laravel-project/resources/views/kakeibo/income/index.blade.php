@@ -27,9 +27,9 @@
    </button>
   </form>
   <div class="mb-6 mt-4">
-   <a href="{{ route('spendings.create') }}"
+   <a href="{{ route('incomes.create') }}"
     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300 mt-4">
-    支出を登録する
+    収入を登録する
    </a>
   </div>
  </div>

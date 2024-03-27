@@ -19,4 +19,9 @@ class Income extends Model
     {
         return $this->belongsTo(IncomeSource::class, 'income_source_id');
     }
+
+    public function incomeSource()
+{
+    return $this->belongsTo(IncomeSource::class);
+}
 }
