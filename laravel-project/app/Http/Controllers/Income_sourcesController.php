@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\IncomeSource;
+use Illuminate\Support\Facades\Auth;
 
 class Income_sourcesController extends Controller
 {
@@ -13,7 +15,8 @@ class Income_sourcesController extends Controller
      */
     public function index()
     {
-        //
+        $incomeSources = IncomeSource::all();
+        return view('kakeibo.income.income_sources.index', compact('incomeSources'));
     }
 
     /**
@@ -23,7 +26,7 @@ class Income_sourcesController extends Controller
      */
     public function create()
     {
-        //
+        return view('kakeibo.income.income_sources.create');
     }
 
     /**
@@ -34,7 +37,23 @@ class Income_sourcesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $userId = Auth::id();
+
+        if (is_null($userId)) {
+            return redirect()->route('login')->withErrors('ログインしてください。');
+        }
+
+        $validatedData['user_id'] = $userId;
+
+        $incomeSource = new IncomeSource($validatedData);
+        $incomeSource->save();
+
+        return redirect()->route('income_sources.index')
+                         ->with('success', '収入源が正常に追加されました。');
     }
 
     /**
