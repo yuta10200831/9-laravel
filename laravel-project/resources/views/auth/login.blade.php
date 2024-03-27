@@ -1,56 +1,40 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+<!DOCTYPE html>
+<html lang="ja">
 
-        <!-- Session Status -->
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>ログイン</title>
+ <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+</head>
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+<body class="min-h-screen bg-gray-100 flex items-center justify-center px-6">
+ <div class="max-w-lg w-full space-y-8">
+  <div class="bg-white shadow-xl rounded-2xl p-8 sm:p-12">
+   <form class="space-y-6" action="{{ route('login') }}" method="POST">
+    @csrf
+    <div>
+     <label for="email" class="block text-sm font-medium text-gray-700">メールアドレス</label>
+     <input id="email" name="email" type="email" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <label for="password" class="block text-sm font-medium text-gray-700">パスワード</label>
+     <input id="password" name="password" type="password" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <button type="submit"
+      class="w-full flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700">
+      ログイン
+     </button>
+     <a href="{{ route('register') }}" class="underline text-sm text-indigo-600 hover:text-indigo-900">
+      新規登録画面へ
+     </a>
+    </div>
+   </form>
+  </div>
+ </div>
+</body>
 
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <!-- Email Address -->
-            <div>
-                <x-label for="email" :value="__('Email')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            </div>
-
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
-
-                <x-input id="password" class="block mt-1 w-full"
-                                type="password"
-                                name="password"
-                                required autocomplete="current-password" />
-            </div>
-
-            <!-- Remember Me -->
-            <div class="block mt-4">
-                <label for="remember_me" class="inline-flex items-center">
-                    <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="remember">
-                    <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
-                    <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
-                    </a>
-                @endif
-
-                <x-button class="ml-3">
-                    {{ __('Log in') }}
-                </x-button>
-            </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+</html>

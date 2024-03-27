@@ -1,59 +1,52 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+<!DOCTYPE html>
+<html lang="ja">
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Register</title>
+ <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.1/dist/tailwind.min.css" rel="stylesheet">
+</head>
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+<body class="min-h-screen bg-gray-100 flex items-center justify-center px-6 py-12">
+ <div class="max-w-md w-full space-y-8">
+  <div class="bg-white shadow-xl rounded-2xl p-8 sm:p-12">
+   <form class="space-y-6" action="{{ route('register') }}" method="POST">
+    @csrf
+    <div>
+     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+     <input id="name" name="name" type="text" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+     <input id="email" name="email" type="email" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+     <input id="password" name="password" type="password" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+     <input id="password_confirmation" name="password_confirmation" type="password" required
+      class="mt-1 block w-full border border-gray-300 bg-gray-50 rounded-lg shadow-sm p-3 text-gray-700">
+    </div>
+    <div>
+     <button type="submit"
+      class="w-full flex justify-center py-3 px-6 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700">
+      アカウント作成
+     </button>
+    </div>
+    <div class="text-sm">
+     <a href="{{ route('login') }}" class="underline text-sm text-indigo-600 hover:text-indigo-900">
+      ログイン画面へ
+     </a>
+    </div>
+   </form>
+  </div>
+ </div>
+</body>
 
-            <!-- Name -->
-            <div>
-                <x-label for="name" :value="__('Name')" />
-
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
-            </div>
-
-            <!-- Email Address -->
-            <div class="mt-4">
-                <x-label for="email" :value="__('Email')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
-            </div>
-
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
-
-                <x-input id="password" class="block mt-1 w-full"
-                                type="password"
-                                name="password"
-                                required autocomplete="new-password" />
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <x-label for="password_confirmation" :value="__('Confirm Password')" />
-
-                <x-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ml-4">
-                    {{ __('Register') }}
-                </x-button>
-            </div>
-        </form>
-    </x-auth-card>
-</x-guest-layout>
+</html>
