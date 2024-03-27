@@ -90,7 +90,9 @@ class SpendingController extends Controller
      */
     public function edit($id)
     {
-        //
+        $spending = Spending::findOrFail($id);
+        $categories = Category::all();
+        return view('kakeibo.spending.edit', compact('spending', 'categories'));
     }
 
     /**
@@ -102,7 +104,17 @@ class SpendingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'amount' => 'required|numeric|min:0',
+            'accrual_date' => 'required|date',
+        ]);
+
+        $spending = Spending::findOrFail($id);
+        $spending->update($validatedData);
+
+        return redirect()->route('spendings.index')->with('success', '支出が更新されました。');
     }
 
     /**
@@ -113,6 +125,9 @@ class SpendingController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $spending = Spending::findOrFail($id);
+        $spending->delete();
+
+        return redirect()->route('spendings.index')->with('success', '支出が削除されました。');
     }
 }

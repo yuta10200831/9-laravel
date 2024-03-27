@@ -69,7 +69,8 @@ class CategoriesController extends Controller
      */
     public function edit($id)
     {
-        //
+        $category = Category::findOrFail($id);
+        return view('kakeibo.spending.categories.edit', compact('category'));
     }
 
     /**
@@ -81,7 +82,14 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|unique:categories,name,' . $id
+        ]);
+
+        $category = Category::findOrFail($id);
+        $category->update($validatedData);
+
+        return redirect()->route('categories.index')->with('success', 'カテゴリが更新されました。');
     }
 
     /**
@@ -92,6 +100,9 @@ class CategoriesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        return redirect()->route('categories.index')->with('success', 'カテゴリが削除されました。');
     }
 }
