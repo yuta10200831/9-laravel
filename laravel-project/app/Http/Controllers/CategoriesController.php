@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Spending;
+use App\Models\Category;
 
 class CategoriesController extends Controller
 {
@@ -13,7 +16,8 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::all();
+        return view('kakeibo.spending.categories.index', compact('categories'));
     }
 
     /**
@@ -23,7 +27,7 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-        //
+        return view('kakeibo.spending.categories.create');
     }
 
     /**
@@ -34,7 +38,16 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userId = Auth::id();
+
+        $validatedData = $request->validate([
+            'name' => 'required|unique:categories'
+        ]);
+
+        $validatedData['user_id'] = $userId;
+
+        Category::create($validatedData);
+        return redirect()->route('categories.index')->with('success', 'カテゴリが追加されました。');
     }
 
     /**
