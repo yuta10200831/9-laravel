@@ -5,9 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\IncomeSource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use App\UseCase\IncomeSource\CreateIncomeSourceInput;
+use App\UseCase\IncomeSource\CreateIncomeSourceInteractor;
+use App\UseCase\IncomeSource\UpdateIncomeSourceInput;
+use App\UseCase\IncomeSource\UpdateIncomeSourceInteractor;
 
 class Income_sourcesController extends Controller
 {
+
+    public function __construct(
+        CreateIncomeSourceInteractor $createInteractor,
+        UpdateIncomeSourceInteractor $updateInteractor
+    ) {
+        $this->createInteractor = $createInteractor;
+        $this->updateInteractor = $updateInteractor;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -42,18 +56,14 @@ class Income_sourcesController extends Controller
         ]);
 
         $userId = Auth::id();
+        $input = new CreateIncomeSourceInput($validatedData['name'], $userId);
+        $output = $this->createInteractor->handle($input);
 
-        if (is_null($userId)) {
-            return redirect()->route('login')->withErrors('ログインしてください。');
+        if ($output->isSuccess()) {
+            return redirect()->route('income_sources.index')->with('success', '収入源が正常に追加されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
         }
-
-        $validatedData['user_id'] = $userId;
-
-        $incomeSource = new IncomeSource($validatedData);
-        $incomeSource->save();
-
-        return redirect()->route('income_sources.index')
-                         ->with('success', '収入源が正常に追加されました。');
     }
 
     /**
@@ -90,13 +100,17 @@ class Income_sourcesController extends Controller
     public function update(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:255',
         ]);
 
-        $incomeSource = IncomeSource::findOrFail($id);
-        $incomeSource->update($validatedData);
+        $input = new UpdateIncomeSourceInput($id, $validatedData['name']);
+        $output = $this->updateInteractor->handle($input);
 
-        return redirect()->route('income_sources.index')->with('success', '収入源が更新されました。');
+        if ($output->isSuccess()) {
+            return redirect()->route('income_sources.index')->with('success', '収入源が更新されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
+        }
     }
 
     /**
