@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Spending;
+use App\Models\Income;
 
 class IndexController extends Controller
 {
@@ -11,19 +13,32 @@ class IndexController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $spendings = [];
-        $incomes = [];
+        $years = range(date('Y'), date('Y') - 10);
+        $selectedYear = $request->query('year', date('Y'));
+
         $fixed_data = [];
+        for ($month = 1; $month <= 12; $month++) {
+            $total_income = Income::whereYear('accrual_date', $selectedYear)
+                ->whereMonth('accrual_date', $month)
+                ->sum('amount');
+            $total_spend = Spending::whereYear('accrual_date', $selectedYear)
+                ->whereMonth('accrual_date', $month)
+                ->sum('amount');
 
-        $data = [
-            'spendings' => $spendings,
-            'incomes' => $incomes,
-            'fixed_data' => $fixed_data
-        ];
+            $fixed_data[] = [
+                'month' => $month . '月',
+                'total_income' => $total_income,
+                'total_spend' => $total_spend
+            ];
+        }
 
-        return view('kakeibo.index', $data);
+        return view('kakeibo.index', [
+            'fixed_data' => $fixed_data,
+            'years' => $years,
+            'selectedYear' => $selectedYear
+        ]);
     }
 
     /**
