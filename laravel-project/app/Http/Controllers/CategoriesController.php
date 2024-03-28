@@ -6,9 +6,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Spending;
 use App\Models\Category;
+use App\UseCase\Category\CreateCategoryInput;
+use App\UseCase\Category\CreateCategoryInteractor;
+use App\UseCase\Category\UpdateCategoryInput;
+use App\UseCase\Category\UpdateCategoryInteractor;
 
 class CategoriesController extends Controller
 {
+
+    public function __construct(
+        CreateCategoryInteractor $createCategoryInteractor,
+        UpdateCategoryInteractor $updateCategoryInteractor
+        )
+    {
+        $this->createCategoryInteractor = $createCategoryInteractor;
+        $this->updateCategoryInteractor = $updateCategoryInteractor;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -40,14 +54,18 @@ class CategoriesController extends Controller
     {
         $userId = Auth::id();
 
-        $validatedData = $request->validate([
-            'name' => 'required|unique:categories'
-        ]);
+        if (is_null($userId)) {
+            return redirect()->route('login')->withErrors('ログインしてください。');
+        }
 
-        $validatedData['user_id'] = $userId;
+        $input = new CreateCategoryInput($request->input('name'), $userId);
+        $output = $this->createCategoryInteractor->handle($input);
 
-        Category::create($validatedData);
-        return redirect()->route('categories.index')->with('success', 'カテゴリが追加されました。');
+        if ($output->isSuccess()) {
+            return redirect()->route('categories.index')->with('success', 'カテゴリが追加されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
+        }
     }
 
     /**
@@ -82,14 +100,14 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|unique:categories,name,' . $id
-        ]);
+        $input = new UpdateCategoryInput($id, $request->input('name'));
+        $output = $this->updateCategoryInteractor->handle($input);
 
-        $category = Category::findOrFail($id);
-        $category->update($validatedData);
-
-        return redirect()->route('categories.index')->with('success', 'カテゴリが更新されました。');
+        if ($output->isSuccess()) {
+            return redirect()->route('categories.index')->with('success', 'カテゴリが更新されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
+        }
     }
 
     /**

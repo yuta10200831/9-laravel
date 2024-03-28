@@ -4,6 +4,7 @@ namespace App\UseCase\Income;
 
 use App\Models\Income;
 use Illuminate\Support\Facades\Validator;
+use App\Models\ValueObjects\Name;
 
 final class UpdateIncomeInteractor
 {
