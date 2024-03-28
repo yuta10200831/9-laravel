@@ -5,9 +5,26 @@ use App\Models\Spending;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\UseCase\Spending\SpendingPageInteractor;
+use App\UseCase\Spending\CreateSpendingInput;
+use App\UseCase\Spending\CreateSpendingInteractor;
+use App\UseCase\Spending\UpdateSpendingInput;
+use App\UseCase\Spending\UpdateSpendingInteractor;
 
 class SpendingController extends Controller
 {
+
+    public function __construct(
+        SpendingPageInteractor $spendingPageInteractor,
+        CreateSpendingInteractor $createSpendingInteractor,
+        UpdateSpendingInteractor $updateSpendingInteractor
+    ) {
+        $this->spendingPageInteractor = $spendingPageInteractor;
+        $this->createSpendingInteractor = $createSpendingInteractor;
+        $this->updateSpendingInteractor = $updateSpendingInteractor;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -15,25 +32,20 @@ class SpendingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Spending::with('category');
+        $spendings = $this->spendingPageInteractor->handle(
+            $request->input('category_id'),
+            $request->input('start_date'),
+            $request->input('end_date')
+        );
 
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
-
-        if ($request->filled('start_date')) {
-            $query->where('accrual_date', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->where('accrual_date', '<=', $request->end_date);
-        }
-
-        $spendings = $query->get();
         $totalSpending = $spendings->sum('amount');
-
         $categories = Category::all();
 
-        return view('kakeibo.spending.index', compact('spendings', 'totalSpending', 'categories'));
+        return view('kakeibo.spending.index', [
+            'spendings' => $spendings,
+            'totalSpending' => $totalSpending,
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -57,18 +69,24 @@ class SpendingController extends Controller
     {
         $userId = Auth::id();
 
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'amount' => 'required|numeric|min:0',
-            'accrual_date' => 'required|date',
-        ]);
+        if (is_null($userId)) {
+            return redirect()->route('login')->withErrors('ログインしてください。');
+        }
 
-        $validatedData['user_id'] = $userId;
+        $name = $request->input('name');
+        $categoryId = $request->input('category_id');
+        $amount = $request->input('amount');
+        $accrualDate = $request->input('accrual_date');
 
-        Spending::create($validatedData);
+        $input = new CreateSpendingInput($name, $categoryId, $amount, $accrualDate, $userId);
 
-        return redirect()->route('spendings.index')->with('success', '支出が登録されました。');
+        $output = $this->createSpendingInteractor->handle($input);
+
+        if ($output->isSuccess()) {
+            return redirect()->route('spendings.index')->with('success', '支出が登録されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
+        }
     }
 
     /**
@@ -104,17 +122,26 @@ class SpendingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'amount' => 'required|numeric|min:0',
-            'accrual_date' => 'required|date',
-        ]);
+        $userId = Auth::id();
+        if (is_null($userId)) {
+            return redirect()->route('login')->withErrors('ログインしてください。');
+        }
 
-        $spending = Spending::findOrFail($id);
-        $spending->update($validatedData);
+        $input = new UpdateSpendingInput(
+            $id,
+            $request->input('name'),
+            (int) $request->input('category_id'),
+            (float) $request->input('amount'),
+            $request->input('accrual_date')
+        );
 
-        return redirect()->route('spendings.index')->with('success', '支出が更新されました。');
+        $output = $this->updateSpendingInteractor->handle($input);
+
+        if ($output->isSuccess()) {
+            return redirect()->route('spendings.index')->with('success', '支出が更新されました。');
+        } else {
+            return back()->withInput()->withErrors($output->getErrors());
+        }
     }
 
     /**
