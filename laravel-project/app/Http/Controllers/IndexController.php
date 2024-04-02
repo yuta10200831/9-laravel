@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Spending;
 use App\Models\Income;
+use App\UseCase\IndexInteractor;
 
 class IndexController extends Controller
 {
+
+    public function __construct(IndexInteractor $indexInteractor)
+    {
+        $this->indexInteractor = $indexInteractor;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,32 +22,22 @@ class IndexController extends Controller
      */
     public function index(Request $request)
     {
-        $years = range(date('Y'), date('Y') - 10);
         $selectedYear = $request->query('year', date('Y'));
 
-        $fixed_data = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $total_income = Income::whereYear('accrual_date', $selectedYear)
-                ->whereMonth('accrual_date', $month)
-                ->sum('amount');
-            $total_spend = Spending::whereYear('accrual_date', $selectedYear)
-                ->whereMonth('accrual_date', $month)
-                ->sum('amount');
-
-            $fixed_data[] = [
-                'month' => $month . '月',
-                'total_income' => $total_income,
-                'total_spend' => $total_spend
-            ];
+        if (is_null($selectedYear)) {
+            $selectedYear = date('Y');
         }
 
+        $selectedYear = (int) $selectedYear;
+
+        $data = $this->indexInteractor->handle($selectedYear);
+
         return view('kakeibo.index', [
-            'fixed_data' => $fixed_data,
-            'years' => $years,
+            'fixed_data' => $data['fixed_data'],
+            'years' => $data['years'],
             'selectedYear' => $selectedYear
         ]);
     }
-
     /**
      * Show the form for creating a new resource.
      *
