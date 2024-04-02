@@ -5,9 +5,26 @@ use App\Models\Income;
 use App\Models\IncomeSource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\UseCase\Income\IncomePageInteractor;
+use App\UseCase\Income\CreateIncomeInput;
+use App\UseCase\Income\CreateIncomeInteractor;
+use App\UseCase\Income\UpdateIncomeInput;
+use App\UseCase\Income\UpdateIncomeInteractor;
 
 class IncomeController extends Controller
 {
+
+    public function __construct(
+        IncomePageInteractor $incomePageInteractor,
+        CreateIncomeInteractor $createIncomeInteractor,
+        UpdateIncomeInteractor $updateIncomeInteractor
+        )
+    {
+        $this->incomePageInteractor = $incomePageInteractor;
+        $this->createIncomeInteractor = $createIncomeInteractor;
+        $this->updateIncomeInteractor = $updateIncomeInteractor;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,24 +32,15 @@ class IncomeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Income::query();
+        $incomeSourceId = $request->filled('income_source_id') ? (int) $request->input('income_source_id') : null;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
-        if ($request->filled('income_source_id')) {
-            $query->where('income_source_id', $request->income_source_id);
-        }
-        if ($request->filled('start_date')) {
-            $query->whereDate('accrual_date', '>=', $request->start_date);
-        }
-        if ($request->filled('end_date')) {
-            $query->whereDate('accrual_date', '<=', $request->end_date);
-        }
+        $data = $this->incomePageInteractor->handle($incomeSourceId, $startDate, $endDate);
 
-        $incomes = $query->with('income_source')->get();
-        $totalIncome = $incomes->sum('amount');
-        $incomeSources = IncomeSource::all();
-
-        return view('kakeibo.income.index', compact('incomes', 'totalIncome', 'incomeSources'));
+        return view('kakeibo.income.index', $data);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -55,17 +63,19 @@ class IncomeController extends Controller
     {
         $userId = Auth::id();
 
-        $validatedData = $request->validate([
-            'income_source_id' => 'required',
-            'amount' => 'required|numeric',
-            'accrual_date' => 'required|date',
-        ]);
+        $input = new CreateIncomeInput(
+            $request->input('income_source_id'),
+            $request->input('amount'),
+            $request->input('accrual_date')
+        );
 
-        $validatedData['user_id'] = $userId;
+        $output = $this->createIncomeInteractor->handle($input, $userId);
 
-        Income::create($validatedData);
-
-        return redirect()->route('incomes.index')->with('success', '収入が登録されました。');
+        if ($output->isSuccess()) {
+            return redirect()->route('incomes.index')->with('success', $output->getMessages()[0]);
+        } else {
+            return back()->withInput()->withErrors($output->getMessages());
+        }
     }
 
     /**
@@ -101,16 +111,19 @@ class IncomeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'income_source_id' => 'required',
-            'amount' => 'required|numeric|min:0',
-            'accrual_date' => 'required|date',
-        ]);
+        $input = new UpdateIncomeInput(
+            $request->input('income_source_id'),
+            $request->input('amount'),
+            $request->input('accrual_date')
+        );
 
-        $income = Income::findOrFail($id);
-        $income->update($validatedData);
+        $output = $this->updateIncomeInteractor->handle($input, $id);
 
-        return redirect()->route('incomes.index')->with('success', '収入が更新されました。');
+        if ($output->isSuccess()) {
+            return redirect()->route('incomes.index')->with('success', $output->getMessages());
+        } else {
+            return back()->withInput()->withErrors($output->getMessages());
+        }
     }
 
     /**
