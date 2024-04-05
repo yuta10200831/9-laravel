@@ -10,7 +10,7 @@
    <form method="POST" action="{{ route('incomes.store') }}">
     @csrf
     <div class="mb-3">
-     <label for="amount" class="block text-blue-800 text-lg font-bold mb-2">収入源</label>
+     <label for="income_source_id" class="block text-blue-800 text-lg font-bold mb-2">収入源</label>
      <div class="flex items-center">
       <select name="income_source_id" id="income_source_id" class="form-control mr-2">
        <option value="">収入源を選択</option>
@@ -19,10 +19,19 @@
        @endforeach
       </select>
       <a href="{{ route('income_sources.index') }}"
-       class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 border border-blue-700 rounded shadow-lg ">
-       収入源一覧へ
-      </a>
+       class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 border border-blue-700 rounded shadow-lg">収入源一覧へ</a>
      </div>
+    </div>
+    <div class="mb-3">
+     <!-- カテゴリを選択するためのセレクトボックス -->
+     <label for="income_category_id" class="block text-blue-800 text-lg font-bold mb-2">カテゴリ</label>
+     <select name="income_category_id" id="income_category_id" class="form-control">
+      <option value="">カテゴリを選択</option>
+      @foreach($incomeCategories as $category)
+      <option value="{{ $category->id }}">{{ $category->name }}</option>
+      @endforeach
+     </select>
+
     </div>
     <div class="mb-6">
      <label for="amount" class="block text-blue-800 text-lg font-bold mb-2">金額</label>
@@ -34,14 +43,10 @@
     </div>
     <div class="flex items-center justify-between">
      <button type="submit"
-      class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline text-lg">
-      登録する
-     </button>
+      class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline text-lg">登録する</button>
     </div>
     <div class="text-center mt-6">
-     <a href="{{ route('incomes.index') }}" class="inline-block text-blue-500 hover:text-blue-800 text-lg">
-      戻る
-     </a>
+     <a href="{{ route('incomes.index') }}" class="inline-block text-blue-500 hover:text-blue-800 text-lg">戻る</a>
     </div>
    </form>
   </div>

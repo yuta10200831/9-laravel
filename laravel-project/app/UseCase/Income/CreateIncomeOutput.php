@@ -7,10 +7,10 @@ final class CreateIncomeOutput
     private $isSuccess;
     private $messages;
 
-    public function __construct(bool $isSuccess, array $messages)
+    public function __construct(bool $isSuccess, $messages)
     {
         $this->isSuccess = $isSuccess;
-        $this->messages = $messages;
+        $this->messages = is_array($messages) ? $messages : [$messages];
     }
 
     public function isSuccess(): bool
