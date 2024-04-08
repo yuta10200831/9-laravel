@@ -15,13 +15,13 @@ class Income extends Model
 
     protected $dates = ['accrual_date'];
 
-    public function income_source()
+    public function incomeSource()
     {
-        return $this->belongsTo(IncomeSource::class, 'income_source_id');
+        return $this->belongsTo(IncomeSource::class);
     }
 
-    public function incomeSource()
-{
-    return $this->belongsTo(IncomeSource::class);
-}
+    public function incomeCategories()
+    {
+        return $this->belongsToMany(IncomeCategory::class, 'incomes_xref_income_categories', 'income_id', 'income_category_id');
+    }
 }

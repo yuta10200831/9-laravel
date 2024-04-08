@@ -22,6 +22,14 @@
    <input type="date" name="start_date" class="form-control" value="{{ request ('start_date') }}" placeholder="開始日">
    <span class="mx-2">〜</span>
    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}" placeholder="終了日">
+   <select name="income_category_id" class="form-control">
+    <option value="">すべてのカテゴリ</option>
+    @foreach ($incomeCategories as $category)
+    <option value="{{ $category->id }}" {{ request('income_category_id') == $category->id ? 'selected' : '' }}>
+     {{ $category->name }}
+    </option>
+    @endforeach
+   </select>
    <button type="submit" class="ml-4 bg-yellow-500 hover:bg-yellow-600 text-blue font-bold py-2 px-4 rounded shadow">
     検索
    </button>
@@ -31,6 +39,11 @@
     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300 mt-4">
     収入を登録する
    </a>
+   {{-- ここに新しいボタンを追加 --}}
+   <a href="{{ route('income_categories.create') }}"
+    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300 ml-4">
+    収入カテゴリを登録する
+   </a>
   </div>
  </div>
 
@@ -39,15 +52,33 @@
    <thead>
     <tr>
      <th class="py-4 px-6 bg-blue-200 font-bold uppercase text-sm text-grey-dark border-b border-grey-light">収入源</th>
+     <th class="py-4 px-6 bg-blue-200 font-bold uppercase text-sm text-grey-dark border-b border-grey-light">カテゴリ</th>
      <th class="py-4 px-6 bg-blue-200 font-bold uppercase text-sm text-grey-dark border-b border-grey-light">金額</th>
      <th class="py-4 px-6 bg-blue-200 font-bold uppercase text-sm text-grey-dark border-b border-grey-light">日付</th>
      <th class="py-4 px-6 bg-blue-200 font-bold uppercase text-sm text-grey-dark border-b border-grey-light">操作</th>
+
     </tr>
    </thead>
    <tbody>
     @foreach ($incomes as $income)
     <tr class="hover:bg-grey-lighter">
-     <td class="py-4 px-6 border-b border-grey-light">{{ $income->income_source->name }}</td>
+     <td class="py-4 px-6 border-b border-grey-light">
+      {{ $income->incomeSource->name ?? '収入源なし' }}
+     </td>
+     <td class="py-4 px-6 border-b border-grey-light">
+      @if ($income->incomeCategories)
+      @if ($income->incomeCategories->isNotEmpty())
+      @foreach ($income->incomeCategories as $category)
+      {{ $loop->first ? '' : ', ' }}
+      {{ $category->name }}
+      @endforeach
+      @else
+      {{ 'カテゴリなし' }} {{-- カテゴリがない場合の表示 --}}
+      @endif
+      @else
+      {{ 'カテゴリなし' }} {{-- カテゴリがnullの場合の表示 --}}
+      @endif
+     </td>
      <td class="py-4 px-6 border-b border-grey-light">{{ number_format($income->amount) }}</td>
      <td class="py-4 px-6 border-b border-grey-light">{{ $income->accrual_date->format('Y-m-d') }}</td>
      <td class="py-4 px-6 border-b border-grey-light">
