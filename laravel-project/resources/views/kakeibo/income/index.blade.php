@@ -43,6 +43,16 @@
    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300">
    カテゴリ登録
   </button>
+  <!-- カテゴリー一覧へ遷移するボタン -->
+  <a href="{{ route('income_categories.index') }}"
+   class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300">
+   カテゴリー一覧へ
+  </a>
+  <!-- 収入源一覧へ遷移するボタン -->
+  <a href="{{ route('income_sources.index') }}"
+   class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded shadow-lg transition ease-in-out duration-300">
+   収入源一覧へ
+  </a>
  </div>
 
  <div class="bg-white shadow-md rounded my-6">
@@ -83,7 +93,7 @@
 
  <!-- 新規収入登録モーダル -->
  <div id="newIncomeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center">
-  <div class="bg-white p-8 rounded-lg shadow-xl">
+  <div class="bg-white p-8 rounded-lg shadow-xl w-3/4 max-w-4xl">
    <span onclick="closeModal('newIncomeModal')" class="text-gray-600 hover:text-gray-800 cursor-pointer">&times;
     閉じる</span>
    <h2 class="text-2xl mb-4">新規収入登録</h2>
@@ -131,7 +141,7 @@
  @foreach ($incomes as $income)
  <div id="editIncomeModal{{ $income->id }}"
   class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center">
-  <div class="bg-white p-8 rounded-lg shadow-xl">
+  <div class="bg-white p-8 rounded-lg shadow-xl w-3/4 max-w-4xl">
    <span onclick="closeModal('editIncomeModal{{ $income->id }}')"
     class="text-gray-600 hover:text-gray-800 cursor-pointer">&times; 閉じる</span>
    <h2 class="text-2xl mb-4">収入の編集</h2>
@@ -182,7 +192,7 @@
 
  {{-- カテゴリー登録モーダル --}}
  <div id="newCategoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center">
-  <div class="bg-white p-8 rounded-lg shadow-xl">
+  <div class="bg-white p-8 rounded-lg shadow-xl w-3/4 max-w-4xl">
    <span onclick="closeModal('newCategoryModal')" class="text-gray-600 hover:text-gray-800 cursor-pointer">&times;
     閉じる</span>
    <h2 class="text-2xl mb-4">カテゴリの登録</h2>
